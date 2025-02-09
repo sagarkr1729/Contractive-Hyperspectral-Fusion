@@ -1,8 +1,17 @@
 # Contractive-Hyperspectral-Fusion
-This repository contains the code for our paper **Hyperspectral Fusion**.
+This repository contains the code for our paper **Hyperspectral Fusion**. 
 
 ## Description
-This code demonstrates the basic experiments performed for our paper.
+In this paper, we show that the **Plug-and-Play** algorithms for **HS/MS fusion** are contractive for the linear self-adjoint class of denoisers. Specifically, the codes demonstrate:
+
+- The contractive nature of **Plug-and-Play** algorithms for hyperspectral (HS) and multispectral (MS) fusion.
+- The effectiveness of **linear self-adjoint denoisers** in the **Plug-and-Play** framework.
+- Fusion reconstruction using **PnP-PGD** and **PnP-HQS**.
+- Calculation of the contraction factor for the our algorithmic setup.
+
+These points highlight the key contributions of the paper.
+
+
 
 ## Table of Contents
 - [Description](#description)
