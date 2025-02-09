@@ -13,7 +13,7 @@ This code shows basics experiments run for our paper
 # Project Title
 
 ## Directory Structure
-
+''' plaintext
 ├── /data             # Data Files
 ├── /Demos            # Code for experiments in paper
 ├── /utils            # All helping Functions
@@ -21,7 +21,7 @@ This code shows basics experiments run for our paper
 └── requirements.txt  # List of dependencies 
 
 
-
+'''
 
 ##Prerequisites
 Before running this project, ensure you have the following installed:
