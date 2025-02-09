@@ -261,7 +261,7 @@ end
 Z_hat = Z_next;
 [rmse_total, ergas, sam, uiqi] = quality_assessment(Zim, Z_hat, 0, 1/down_fact)
 
-bb=[3 2 1];
+bb=[60 45 55];
 %bb=[20 80 100];
 %bb=[15 50 100];
 
