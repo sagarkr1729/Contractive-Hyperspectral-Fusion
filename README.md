@@ -1,7 +1,7 @@
 # Contractive-Hyperspectral-Fusion
 This is code for Our Paper Hyperspectral Fusion
 ## Description
-This project aims to [briefly describe the purpose and functionality of your project]. It is designed to [state what the project solves or improves]. It uses [mention key technologies or libraries used].
+This code shows basics experiments run for our paper
 
 ## Table of Contents
 - [Description](#description)
