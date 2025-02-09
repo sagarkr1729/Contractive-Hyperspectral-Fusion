@@ -13,14 +13,14 @@ This code shows basics experiments run for our paper
 # Project Title
 
 ## Directory Structure
-```plaintext
+```plaintext(
 ├── /data             # Data Files
 ├── /Demos            # Code for experiments in paper
 ├── /utils            # All helping Functions
 ├── README.md         # Project readme
-└── requirements.txt  # List of dependencies 
+└── requirements.txt  # List of dependencies ''')
 
-'''
+
 
 
 ## Prerequisites
