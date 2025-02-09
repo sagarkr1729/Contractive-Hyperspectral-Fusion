@@ -1,7 +1,8 @@
 # Contractive-Hyperspectral-Fusion
-This is code for Our Paper Hyperspectral Fusion
+This repository contains the code for our paper **Hyperspectral Fusion**.
+
 ## Description
-This code shows basics experiments run for our paper
+This code demonstrates the basic experiments performed for our paper.
 
 ## Table of Contents
 - [Description](#description)
@@ -10,32 +11,17 @@ This code shows basics experiments run for our paper
 - [Code Running](#code-running)
 - [Citation](#citation)
 
-# Project Title
-
 ## Directory Structure
-''' plaintext
+```plaintext
 ├── /data             # Data Files
-├── /Demos            # Code for experiments in paper
-├── /utils            # All helping Functions
-├── README.md         # Project readme
-└── requirements.txt  # List of dependencies 
-
-
-
-
-##Prerequisites
-Before running this project, ensure you have the following installed:
-- **MATLAB **
-
-You can download MATLAB from [here](https://www.mathworks.com/products/matlab.html).
+├── /Demos            # Code for experiments in the paper
+├── /utils            # Helper functions
+├── README.md         # Project README
+└── requirements.txt  # List of dependencies
 
 
 
 
 
-@misc{yourproject,
-  author = {Your Name},
-  title = {Project Title},
-  year = {2025},
-  url = {https://github.com/yourusername/yourproject},
-}
+
+
