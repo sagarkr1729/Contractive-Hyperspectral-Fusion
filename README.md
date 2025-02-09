@@ -11,10 +11,9 @@ This code shows basics experiments run for our paper
 - [Citation](#citation)
 
 ## Directory Structure
-├── /src              # Source code files
-├── /docs             # Documentation files
-├── /tests            # Test cases and unit tests
-├── /scripts          # Helper scripts
+├── /data             # Data Files
+├── /Demos            # Code for experiments in paper
+├── /utils            # All helping Functions
 ├── README.md         # Project readme
 └── requirements.txt  # List of dependencies
 
@@ -22,7 +21,7 @@ This code shows basics experiments run for our paper
 
 ## Prerequisites
 Before running this project, ensure you have the following installed:
-- **MATLAB R2024b** (or higher)
+- **MATLAB **
 
 You can download MATLAB from [here](https://www.mathworks.com/products/matlab.html).
 
