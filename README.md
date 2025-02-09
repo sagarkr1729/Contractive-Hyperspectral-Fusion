@@ -8,7 +8,6 @@ This code demonstrates the basic experiments performed for our paper.
 - [Description](#description)
 - [Directory Structure](#directory-structure)
 - [Prerequisites](#prerequisites)
-- [Code Running](#code-running)
 - [Citation](#citation)
 
 ## Directory Structure
@@ -18,10 +17,17 @@ This code demonstrates the basic experiments performed for our paper.
 ├── /utils            # Helper functions
 ├── README.md         # Project README
 └── requirements.txt  # List of dependencies
+```
 
 
+## Prerequisites
 
+Before running this project, ensure you have the following installed:
 
+1. **MATLAB**:  
+   This project requires MATLAB to run the code. You can download and install MATLAB from the official website:  
+   [MATLAB Download](https://www.mathworks.com/products/matlab.html).  
+  
 
 
 
