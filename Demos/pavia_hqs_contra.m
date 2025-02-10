@@ -163,7 +163,7 @@ grad = @(X) compute_gradient(X,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi);
 lambda_phi = 1;
 lambda_m = 6;
 h = 10/255 ;
-maxiters = 50;
+maxiters = 1000;
 delta = 4;
 scale_fact=1;
 mu=2;
@@ -176,7 +176,7 @@ bicubic_fusion = imresize(Yhim,down_fact);
 
 tol = 1e-10;
 
-max_iter=1;
+max_iter=1000;
 tol_norm=1e-5;
 tol_dot=1e-5;
 verbose=true;
