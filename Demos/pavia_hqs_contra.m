@@ -191,8 +191,8 @@ X_curr1 = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 
 %stepsize=1/beta;
 %contrac=power_method_for_denoiser1(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p, h, X_curr1)
-lambda_m_values = 0:1:1;
-mu_values = [50];
+lambda_m_values = 0:1:15;
+mu_values = [0.5,1,2,4,5,10];
 h_values = [5/255,10/255, 50/255];
 % Initialize matrix to store ss_values (contractive factors) for each h (Step Size vs Contractive Factor)
 ss_matrix = zeros(length(h_values), length(mu_values));
