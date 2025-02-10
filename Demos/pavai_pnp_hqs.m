@@ -143,7 +143,7 @@ E = V;
 lambda_phi = 1;
 lambda_m = 6;
 h = 20/255 ;
-maxiters = 1500;
+maxiters = 100;
 delta = 4;
 scale_fact=1;
 mu=.50;
@@ -167,14 +167,7 @@ bicubic_fusion = imresize(Yhim,down_fact);
 
 tol = 1e-15;
 max_iter=1000;
-%W = compute_weights(Ymim,search_rad,patch_rad,h,1);
-%load('W.mat');
-%denoiser = @(x) perform_denoising(W,x);
-% bb=[8 13 45];
-% temp_fig = Zim;
-% temp_rgb = imadjust(temp_fig(:,:,bb),stretchlim(temp_fig(:,:,bb)),[]);
-% figure;
-% imshow(temp_rgb)
+
 
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 X_curr1 = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
@@ -202,7 +195,7 @@ denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
      X_next=V2;
 end
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
-X_curr2 = zeros(rr,cc,p);
+%X_curr2 = zeros(rr,cc,p);
 %X_curr=ones(rr,cc,p);
 X_curr1=X_next;
 X_curr2=X_next;
