@@ -29,8 +29,8 @@ basis_type = 'SVD';
 lambda_phi = 5e-4;
 lambda_m = 1e0;
 % 
-% IV. In the end, three quality indices are computed using the ground
-% truth image. These indices are ERGAS, SAM, and UIQI.
+% IV. In the end, five quality indices are computed using the ground
+% truth image. These indices are PSNR, RMSE,ERGAS, SAM, and UIQI.
 % 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 %                                                                       %
@@ -170,14 +170,7 @@ iters=1;
 f = @(X) 0.5 * (norm(Yhim - SB(mat2im(E * im2mat(X), rr)), 'fro') + lambda_m*norm(Ymim - mat2im(R * E * im2mat(X), rr), 'fro'));
 X_curr = zeros(rr,cc,p);
 
-%W = compute_weights(Ymim,search_rad,patch_rad,h,1);
-%load('W.mat');
-%denoiser = @(x) perform_denoising(W,x);
-% bb=[8 13 45];
-% temp_fig = Zim;
-% temp_rgb = imadjust(temp_fig(:,:,bb),stretchlim(temp_fig(:,:,bb)),[]);
-% figure;
-% imshow(temp_rgb)
+
 
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 X_curr1 = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
@@ -213,16 +206,14 @@ X_curr=zeros(rr,cc,p);
 X_curr1=X_next;
 X_curr2=X_next;
 while(true)
-    grad_curr = grad(X_curr);
+    
     denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
     % Use backtracking line search to determine step size
     [X_next, step_size] = backtracking_line_search(f, grad, X_curr, step_size_init, rho, c);
     % V_curr = X_curr - delta * grad(X_curr);
-%denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
     V2=  denoiser(X_next);
-    
- V_curr = V2;
-     B2=V_curr;
+     
+     B2=V2;
     for jj=1:size(B2,3)
     eigen_im=(  B2(:,:,jj));
      input=eigen_im;
