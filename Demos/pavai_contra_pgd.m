@@ -162,7 +162,7 @@ grad = @(X) compute_gradient(X,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi);
 lambda_phi = 1;
 lambda_m = 6;
 h =25/255;
-maxiters = 100;
+maxiters = 1000;
 delta =4;
 scale_fact=1;
 %B_est = B;
@@ -178,7 +178,7 @@ X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 %% Contractive factor calcualtion
 
  bicubic_fusion;
-max_iter=50;
+max_iter=1000;
 tol_norm=1e-20;
 tol_dot=1e-20;
 verbose=true;
