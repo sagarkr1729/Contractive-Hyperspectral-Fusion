@@ -178,7 +178,7 @@ X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 %% Contractive factor calcualtion
 
  bicubic_fusion;
-max_iter=1000;
+max_iter=50;
 tol_norm=1e-20;
 tol_dot=1e-20;
 verbose=true;
@@ -195,73 +195,80 @@ beta=power_method_for_beta(nl,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi,ste
 fprintf('The Lipschitz L for gradient_operator calculated is %d\n',beta);
 %stepsize=1/beta;
 %contrac=power_method_for_denoiser1(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p, h, X_curr1)
+
+
+
+
 lambda_m_values = 0:1:15;
 stepsize_values = 0.1:0.1:1.95;
-h_values = [5/255,10/255,20/255,30/255, 50/255];
-% Initialize matrix to store ss_values (contractive factors) for each h (Step Size vs Contractive Factor)
-ss_matrix = zeros(length(h_values), length(stepsize_values));
+h_values = [5/255,10/255,30/255];
+s_values=[5/255,10/255,30/255];
 
-% Initialize matrix to store contra_values (contractive factors) for each h (Lambda vs Contractive Factor)
-contra_matrix = zeros(length(h_values), length(lambda_m_values));
+lambda_m_values = 0:1:5;
+stepsize_values = 0.5;
+h_values = [5/255,10/255];
+s_values=[5/255,10/255];
+%% Save ss_matrix and contra_matrix for all combinations of s_values and h_values
 
-% Contractive Factor Calculation - Step Size vs Contractive Factor for different h values
- % Adjust the range as needed
-figure;
-hold on; % Hold the figure to plot multiple lines for different h values
+% Initialize matrices to store contractive factors
+ss_matrix = zeros(length(s_values) * length(h_values), length(stepsize_values));
+contra_matrix = zeros(length(s_values) * length(h_values), length(lambda_m_values));
 
-for h_idx = 1:length(h_values)
-    h = h_values(h_idx); % Update h value
-    ss_values = zeros(size(stepsize_values)); % Reset ss_values array for each h
+% Initialize index counter
+counter = 1;
 
-    for idx = 1:length(stepsize_values)
-        stepsize = stepsize_values(idx) / beta;
-        ss_values(idx) = power_method_for_denoiser1(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p, h, X_curr1);
+% Loop through s_values first, then h_values
+for s_idx = 1:length(s_values)
+    Sigma = s_values(s_idx);
+    
+    for h_idx = 1:length(h_values)
+        h = h_values(h_idx);
+        ss_values = zeros(size(stepsize_values));
+        contra_values = zeros(size(lambda_m_values));
+
+        % Calculate step size vs contractive factor
+        for idx = 1:length(stepsize_values)
+            stepsize = stepsize_values(idx) / beta;
+            ss_values(idx) = power_method_for_denoiser1(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p, h, X_curr1, Sigma);
+        end
+        
+        % Calculate lambda vs contractive factor
+        for idx = 1:length(lambda_m_values)
+            lambda_m = lambda_m_values(idx);
+            beta = power_method_for_beta(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p);
+            stepsize = 1.9 / beta;
+            contra_values(idx) = power_method_for_denoiser1(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p, h, X_curr1, Sigma);
+        end
+        
+        % Store results in matrices as rows
+        ss_matrix(counter, :) = ss_values;
+        contra_matrix(counter, :) = contra_values;
+
+        % Save individual results
+        ss_filename = sprintf('ss_matrix_s%.3f_h%.3f.mat', Sigma, h);
+        contra_filename = sprintf('contra_matrix_s%.3f_h%.3f.mat', Sigma, h);
+        save(ss_filename, 'ss_values', 'stepsize_values', 'h', 'Sigma');
+        save(contra_filename, 'contra_values', 'lambda_m_values', 'h', 'Sigma');
+        
+        fprintf('Saved ss_matrix and contra_matrix for s = %.3f, h = %.3f\n', Sigma, h);
+
+        % Update counter
+        counter = counter + 1;
     end
-
-    % Store the ss_values as a row in ss_matrix
-    ss_matrix(h_idx, :) = ss_values;
-
-    % Plot the results for each h value
-    plot(stepsize_values, ss_values, 'DisplayName', sprintf('h = %.3f', h));
 end
 
-xlabel('Step Size ($\frac{i}{\beta}$)','Interpreter','latex');
-ylabel('Contractive factor');
-legend show; % Show legend for h values
-hold off;
+% Save the full matrices
+save('ss_matrix_all_combinations.mat', 'ss_matrix', 's_values', 'h_values', 'stepsize_values');
+save('contra_matrix_all_combinations.mat', 'contra_matrix', 's_values', 'h_values', 'lambda_m_values');
 
-% Contractive Factor Calculation - Lambda vs Contractive Factor for different h values
-  % Define the range of lambda_m values
-figure;
-hold on;
+fprintf('Saved full ss_matrix and contra_matrix for all (s, h) combinations as 2D matrices!\n');
 
-for h_idx = 1:length(h_values)
-    h = h_values(h_idx); % Update h value
-    contra_values = zeros(size(lambda_m_values));
-    step_values = zeros(size(lambda_m_values));
+% Let me know if you’d like me to refine or add anything! 🚀
 
-    for idx = 1:length(lambda_m_values)
-        lambda_m = lambda_m_values(idx);
-        beta = power_method_for_beta(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p);
-        fprintf('The Lipschitz L for gradient_operator calculated is %d\n', beta);
-        stepsize = 1.9 / beta;
-        step_values(idx) = stepsize;
-        contra_values(idx) = power_method_for_denoiser1(nl, SB, SBadj, E, R_est, Yhim, Ymim, lambda_m, lambda_phi, stepsize, Sample, max_iter, tol_norm, tol_dot, verbose, p, h, X_curr1);
-    end
 
-    % Store the contra_values as a row in contra_matrix
-    contra_matrix(h_idx, :) = contra_values;
 
-    % Plot the results for each h value
-    plot(lambda_m_values, contra_values, 'DisplayName', sprintf('h = %.3f', h));
-end
 
-xlabel('$\lambda_m$','Interpreter','latex');
-ylabel('Contractive factor');
-legend show; % Show legend for h values
-hold off;
 
-%%
 %% Function for contractive functiom
 
 
@@ -346,14 +353,14 @@ end
 
 
 
-function [eigenvalue] = power_method_for_denoiser1(b,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi,stepsize, input_image, max_iter, tol_norm, tol_dot, verbose,p,h,X_curr1)
+function [eigenvalue] = power_method_for_denoiser1(b,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi,stepsize, input_image, max_iter, tol_norm, tol_dot, verbose,p,h,X_curr1,Sigma)
   % Get image dimensions
   [m, n] = size(input_image);
   % Initialize storage for convergence metrics (optional)
   denoiser = @(a) wrapper_FASTDSGNLM(a,h,X_curr1);
 PatchSizeHalf=3;
  WindowSizeHalf=5;
- Sigma=5/255;
+ 
   % Initialize variables
   x = rand(m, n);
   x = double(x);  % Convert to double precision
@@ -440,3 +447,54 @@ end
 
 %%
 
+function [eigenvalue] = power_method_for_denoiser_only(b,input_image, max_iter, tol_norm, verbose,h,X_curr1)
+  % Get image dimensions
+  [m, n] = size(input_image);
+  % Initialize storage for convergence metrics (optional)
+  denoiser = @(a) wrapper_FASTDSGNLM(a,h,X_curr1);
+
+  % Initialize variables
+  x = rand(m, n);
+  x = double(x);  % Convert to double precision
+  x= x / norm(x, 'fro');  % Normalize
+  x1=mat2im(x',b);
+  y=denoiser(x1);
+
+  for i = 1:max_iter
+    % Update with new eigenvector
+    y_old = x;  % Store previous state for distance calculation
+     x1=mat2im(x',b);
+     y=x1;
+     y=denoiser(y)-mat2im((1/b).*ones(1,b)*ones(1,b)'*im2mat(y),b);
+    % y=denoiser(y);
+      y=im2mat(y);
+      
+    y_norm = norm(y, 'fro');
+ 
+    x = y' / y_norm;
+
+  
+
+    % Check for convergence based on norm difference
+    if abs(norm(x-y_old, 'fro') ) <= tol_norm
+      if verbose
+        disp('Converged: Norm difference less than tolerance');
+      end
+      break;
+    end
+   
+    
+  end
+ 
+
+  % Print final information if verbose
+  if verbose
+    if i == max_iter
+      disp('Not converged');
+    end
+    fprintf('Iteration: %d\n', i);
+  end
+  
+  % Return the final eigenvalue estimate (norm of y)
+  eigenvalue = norm(y, 'fro');
+end
