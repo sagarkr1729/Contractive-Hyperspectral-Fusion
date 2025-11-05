@@ -146,31 +146,36 @@ patch_rad = 2;
 lambda_phi = 1;
 lambda_m = 6;
 h =25/255;
-maxiters = 100;
+maxiters = 50;
 delta =4;
 scale_fact=1;
 %B_est = B;
 %R_est = ones(1,4);
 PatchSizeHalf=3;
- WindowSizeHalf=5;
+ WindowSizeHalf=7;
  Sigma=10/255;
-step_size_init = 4;  % Initial step size for backtracking
-rho = 0.5;  % Backtracking reduction factor
-c = 0.001;  
+
+ B_est=B;
+ R_est=R;
 SB = @(X) blur_downsample(X,B_est,down_fact);
 SBadj = @(X) upsample_blur(X,B_est,down_fact);
 grad = @(X) compute_gradient(X,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi);
 [rr,cc,~] = size(Ymim);
+
+psnr_vals = nan(1,maxiters);
+iters = 1;
+
 bicubic_fusion = imresize(Yhim,down_fact);
-%f = @(X) 0.5 * (norm(Yhim - SB(mat2im(E * im2mat(X), rr)), 'fro') + norm(Ymim - mat2im(R * E * im2mat(X), rr), 'fro'));
-
-
-iters=1;
-% Define the objective function for backtracking line search
-f = @(X) 0.5 * (norm(Yhim - SB(mat2im(E * im2mat(X), rr)), 'fro') + lambda_m*norm(Ymim - mat2im(R * E * im2mat(X), rr), 'fro'));
 X_curr = zeros(rr,cc,p);
 
-
+%W = compute_weights(Ymim,search_rad,patch_rad,h,1);
+%load('W.mat');
+%denoiser = @(x) perform_denoising(W,x);
+% bb=[8 13 45];
+% temp_fig = Zim;
+% temp_rgb = imadjust(temp_fig(:,:,bb),stretchlim(temp_fig(:,:,bb)),[]);
+% figure;
+% imshow(temp_rgb)
 
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 X_curr1 = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
@@ -181,8 +186,8 @@ for itera=1:1:10
   V_curr = X_curr - delta * grad(X_curr);
 denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
     V2= scale_fact * denoiser(V_curr);
-    X_curr=V2;
- V_curr = X_curr;
+    
+ V_curr = V2;
      B2=V_curr;
     for jj=1:size(B2,3)
     eigen_im=(  B2(:,:,jj));
@@ -199,21 +204,18 @@ denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
     end
     
     X_next=V2;
-    X_curr=X_next;
 end
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
-X_curr=zeros(rr,cc,p);
+%X_curr=zeros(rr,cc,p);
 X_curr1=X_next;
 X_curr2=X_next;
 while(true)
+     V_curr = X_curr - delta * grad(X_curr);
+denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
+    V2= scale_fact * denoiser(V_curr);
     
-    denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
-    % Use backtracking line search to determine step size
-    [X_next, step_size] = backtracking_line_search(f, grad, X_curr, step_size_init, rho, c);
-    % V_curr = X_curr - delta * grad(X_curr);
-    V2=  denoiser(X_next);
-     
-     B2=V2;
+ V_curr = V2;
+     B2=V_curr;
     for jj=1:size(B2,3)
     eigen_im=(  B2(:,:,jj));
      input=eigen_im;
@@ -235,7 +237,7 @@ while(true)
     psnr_next = psnr(Z_next,Zim,1);
     a=norm(im2mat(X_next-X_curr),'fro');
     %fprintf('Iteration = %d, PSNR = %f,iterationvalue=%f\n',iters,psnr_next,a);
-    fprintf('Iteration = %d,PSNR=%f, RMSE = %f,ERGAS=%f,SAM=%f,UIQI=%f,iterationvalue=%f, Step Size = %f\n',iters,psnr_next,rmse_total_next,ergas_next,sam_next,uiqi_next,a,step_size);
+    fprintf('Iteration = %d,PSNR=%f, RMSE = %f,ERGAS=%f,SAM=%f,UIQI=%f,iterationvalue=%f\n',iters,psnr_next,rmse_total_next,ergas_next,sam_next,uiqi_next,a);
     psnr_vals(iters) = psnr_next;
     x_Entry{iters}=X_curr;
     
@@ -252,7 +254,7 @@ end
 Z_hat = Z_next;
 [rmse_total, ergas, sam, uiqi] = quality_assessment(Zim, Z_hat, 0, 1/down_fact)
 
-bb=[60 45 55];
+bb=[3 2 1];
 %bb=[20 80 100];
 %bb=[15 50 100];
 
@@ -280,32 +282,3 @@ plot(iteration_Cou,psnr_vals);xlabel('iteration');ylabel('PSNR')
 figure;
 plot(iteration_Cou,X_conv);xlabel('iteration');ylabel('$\log\|X_k-X_*\|$','interpreter','latex')
 
-
-function [X_next, step_size] = backtracking_line_search(f, grad, X_curr, step_size_init, rho, c)
-    % f: The objective function
-    % grad: The gradient of the objective function
-    % X_curr: The current solution
-    % step_size_init: The initial step size
-    % rho: Backtracking factor (typically between 0.5 and 0.8)
-    % c: Armijo condition constant (typically small, e.g., 1e-4)
-    
-    % Calculate the current gradient and objective function value
-    grad_curr = grad(X_curr);
-    f_curr = f(X_curr);
-    
-    % Initialize the step size
-    step_size = step_size_init;
-    
-    % Armijo condition check loop
-    while true
-        % Compute the candidate next solution
-        X_next = X_curr - step_size * grad_curr;
-        
-        % Check the Armijo condition
-        if f(X_next) <= f_curr - c * step_size * sum(grad_curr(:).^2)
-            break;  % If condition is met, accept the step size
-        else
-            step_size = rho * step_size;  % Otherwise, reduce the step size
-        end
-    end
-end
