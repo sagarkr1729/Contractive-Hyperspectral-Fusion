@@ -143,6 +143,8 @@ E = V;
 search_rad = 2;
 patch_rad = 2;
 
+% Hyperparamter of denoiser and algorithm
+
 lambda_phi = 1;
 lambda_m = 6;
 h =25/255;
@@ -177,6 +179,8 @@ X_curr = zeros(rr,cc,p);
 % figure;
 % imshow(temp_rgb)
 
+% creating ground truth for CasKD denoiser 
+
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 X_curr1 = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 x_Entry= cell(1,maxiters);
@@ -205,6 +209,9 @@ denoiser = @(x) wrapper_FASTDSGNLM(x,h,X_curr1);
     
     X_next=V2;
 end
+
+%  Actual PnP-PGD iteration
+
 X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 %X_curr=zeros(rr,cc,p);
 X_curr1=X_next;
@@ -281,4 +288,5 @@ figure;
 plot(iteration_Cou,psnr_vals);xlabel('iteration');ylabel('PSNR')
 figure;
 plot(iteration_Cou,X_conv);xlabel('iteration');ylabel('$\log\|X_k-X_*\|$','interpreter','latex')
+
 
