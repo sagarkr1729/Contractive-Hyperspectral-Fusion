@@ -1,4 +1,4 @@
-#  Convergent Denoiser-Driven Hyperspectral Fusion
+#  HyDeFuse: Provably Convergent Denoiser-Driven Hyperspectral Fusion
 This repository contains the code for our paper **HyDeFuse: Provably Convergent Denoiser-Driven Hyperspectral Fusion**. 
 
 ## Description
