@@ -178,7 +178,7 @@ X_curr = var_dim(ima_interp_spline(Yhim,downsamp_factor),pinv(E));
 %% Contractive factor calcualtion
 
  bicubic_fusion;
-max_iter=50;
+max_iter=200;
 tol_norm=1e-20;
 tol_dot=1e-20;
 verbose=true;
@@ -204,10 +204,10 @@ stepsize_values = 0.1:0.1:1.95;
 h_values = [5/255,10/255,30/255];
 s_values=[5/255,10/255,30/255];
 
-lambda_m_values = 0:1:5;
-stepsize_values = 0.5;
-h_values = [5/255,10/255];
-s_values=[5/255,10/255];
+%lambda_m_values = 0:1:5;
+%stepsize_values = 0.5;
+%h_values = [5/255,10/255];
+%s_values=[5/255,10/255];
 %% Save ss_matrix and contra_matrix for all combinations of s_values and h_values
 
 % Initialize matrices to store contractive factors
@@ -263,7 +263,7 @@ save('contra_matrix_all_combinations.mat', 'contra_matrix', 's_values', 'h_value
 
 fprintf('Saved full ss_matrix and contra_matrix for all (s, h) combinations as 2D matrices!\n');
 
-% Let me know if you’d like me to refine or add anything! 🚀
+
 
 
 
@@ -276,7 +276,7 @@ fprintf('Saved full ss_matrix and contra_matrix for all (s, h) combinations as 2
 
 
 
-%  matlab function for power method
+%  matlab function for power method for calculating beta which used for computing step-size
 function [eigenvalue] = power_method_for_beta(b,SB,SBadj,E,R_est,Yhim,Ymim,lambda_m,lambda_phi,stepsize, input_image, max_iter, tol_norm, tol_dot, verbose,p)
   % Get image dimensions
   [m, n] = size(input_image);
